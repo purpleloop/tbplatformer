@@ -9,6 +9,9 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import tbplatformer.model.LevelMap;
+import tbplatformer.storage.ResourceFileStorage;
+
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 
     /** Serial tag. */
@@ -107,7 +110,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         g = image.createGraphics();
 
-        tileMap = new TileMap("maps/testmap2.txt", 32);
+        ResourceFileStorage resourceFileStorage = new ResourceFileStorage();
+        LevelMap map = resourceFileStorage.getMapByName("testmap2");
+        tileMap = new TileMap(map);
+
         tileMap.loadTiles("graphics/tileset.gif");
         player = new Player(tileMap);
         player.setX(50);

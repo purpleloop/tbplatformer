@@ -2,22 +2,20 @@ package tbplatformer;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import tbplatformer.model.LevelMap;
 
 public class TileMap {
 
     private int x;
     private int y;
 
-    private int tileSize;
-    private int[][] map;
-    private int mapWidth;
-    private int mapHeight;
+    private int tileSize = 32;
+    private LevelMap map;
 
     private BufferedImage tileSet;
     private Tile[][] tiles;
@@ -27,35 +25,12 @@ public class TileMap {
     private int maxx = 0;
     private int maxy = 0;
 
-    public TileMap(String s, int tileSize) {
-        this.tileSize = tileSize;
+    public TileMap(LevelMap map) {
 
-        try (BufferedReader br = new BufferedReader(new FileReader(s));) {
+        this.map = map;
 
-            mapWidth = Integer.parseInt(br.readLine());
-
-            mapHeight = Integer.parseInt(br.readLine());
-
-            map = new int[mapHeight][mapWidth];
-
-            minx = GamePanel.WIDTH - mapWidth * tileSize;
-            miny = GamePanel.HEIGHT - mapHeight * tileSize;
-
-            String delimiters = "\\s+";
-
-            for (int row = 0; row < mapHeight; row++) {
-                String line = br.readLine();
-                String[] tokens = line.split(delimiters);
-
-                for (int col = 0; col < mapWidth; col++) {
-                    map[row][col] = Integer.parseInt(tokens[col]);
-                }
-
-            }
-
-        } catch (IOException e) {
-            throw new GameException("Error while reading the map", e);
-        }
+        minx = GamePanel.WIDTH - map.getWidth() * tileSize;
+        miny = GamePanel.HEIGHT - map.getHeight() * tileSize;
 
     }
 
@@ -111,7 +86,7 @@ public class TileMap {
     }
 
     public boolean isBlocked(int row, int col) {
-        int rc = map[row][col];
+        int rc = map.getTile(row, col);
         int r = rc / tiles[0].length;
         int c = rc % tiles[0].length;
         return tiles[r][c].isBlocked();
@@ -126,7 +101,7 @@ public class TileMap {
     }
 
     public int getTile(int row, int col) {
-        return map[row][col];
+        return map.getTile(row, col);
     }
 
     public int getTileSize() {
@@ -138,9 +113,9 @@ public class TileMap {
     }
 
     public void draw(Graphics2D g) {
-        for (int row = 0; row < mapHeight; row++) {
-            for (int col = 0; col < mapWidth; col++) {
-                int rc = map[row][col];
+        for (int row = 0; row < map.getHeight(); row++) {
+            for (int col = 0; col < map.getWidth(); col++) {
+                int rc = map.getTile(row, col);
 
                 int r = rc / tiles[0].length;
                 int c = rc % tiles[0].length;
