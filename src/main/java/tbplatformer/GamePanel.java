@@ -112,9 +112,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
         ResourceFileStorage resourceFileStorage = new ResourceFileStorage();
         LevelMap map = resourceFileStorage.getMapByName("testmap2");
-        tileMap = new TileMap(map);
+        TileSet loadTiles = resourceFileStorage.getTileSetByName("tileset");
+        tileMap = new TileMap(map, loadTiles);
 
-        tileMap.loadTiles("graphics/tileset.gif");
         player = new Player(tileMap);
         player.setX(50);
         player.setY(50);
