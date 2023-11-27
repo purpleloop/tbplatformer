@@ -1,9 +1,12 @@
 package tbplatformer.storage;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -15,6 +18,8 @@ import tbplatformer.model.LevelMap;
 
 /** Game resources storage. */
 public class ResourceFileStorage implements ResourceStorage {
+
+    public final String NEW_LINE = "\n";
 
     /** File extensions for maps. */
     private static final String MAP_EXTENSION = ".txt";
@@ -30,13 +35,18 @@ public class ResourceFileStorage implements ResourceStorage {
 
     /** Filesystem path where tilesets are stored. */
     private Path tilesSetStoragePath = Paths.get("graphics/");
-    
+
     @Override
     public LevelMap getMapByName(String mapName) {
 
         File mapFile = getFileForResource(mapStoragePath, mapName, MAP_EXTENSION);
 
-        try (BufferedReader mapBufferedReader = new BufferedReader(new FileReader(mapFile));) {
+        return readMapFile(mapFile);
+    }
+
+    public LevelMap readMapFile(File mapFile) {
+        try (BufferedReader mapBufferedReader = new BufferedReader(
+                new FileReader(mapFile, StandardCharsets.UTF_8));) {
 
             // File begins with the width and height of the map
             int mapWidth = Integer.parseInt(mapBufferedReader.readLine());
@@ -59,26 +69,69 @@ public class ResourceFileStorage implements ResourceStorage {
             return levelMap;
 
         } catch (IOException e) {
-            throw new GameException("Error while reading the level map " + mapName, e);
+            throw new GameException(
+                    "Error while reading the level map " + mapFile.getAbsolutePath(), e);
+        }
+    }
+
+    public void saveMapFile(LevelMap levelMap, File mapFile) {
+        try (BufferedWriter mapBufferedWriter = new BufferedWriter(
+                new FileWriter(mapFile, StandardCharsets.UTF_8));) {
+
+            // File begins with the width and height of the map
+            int width = levelMap.getWidth();
+            mapBufferedWriter.write(Integer.toString(width));
+            mapBufferedWriter.write(NEW_LINE);
+
+            int height = levelMap.getHeight();
+            mapBufferedWriter.write(Integer.toString(height));
+            mapBufferedWriter.write(NEW_LINE);
+
+            // Next we have the level map structure given by the value of each
+            // tiles in a 2D array.
+
+            boolean alreadyInLine = false;
+
+            for (int row = 0; row < height; row++) {
+                for (int col = 0; col < width; col++) {
+
+                    if (!alreadyInLine) {
+
+                        alreadyInLine = true;
+                    } else {
+                        mapBufferedWriter.write(' ');
+                    }
+                    mapBufferedWriter.write(Integer.toString(levelMap.getTile(row, col)));
+
+                }
+                mapBufferedWriter.write(NEW_LINE);
+                alreadyInLine = false;
+            }
+
+        } catch (IOException e) {
+            throw new GameException(
+                    "Error while writing the level map " + mapFile.getAbsolutePath(), e);
         }
     }
 
     @Override
     public TileSet getTileSetByName(String tileSetImageName) {
-        
-        File tileSetFile = getFileForResource(tilesSetStoragePath, tileSetImageName, IMAGE_EXTENSION);
-        
+
+        File tileSetFile = getFileForResource(tilesSetStoragePath, tileSetImageName,
+                IMAGE_EXTENSION);
+
         try {
             return new TileSet(ImageIO.read(tileSetFile));
-    
+
         } catch (IOException e) {
             throw new GameException("Error while loading the tileset", e);
         }
-    
+
     }
 
     /**
      * Get a the file corresponding to a given resource name.
+     * 
      * @param path path for the resource
      * @param resourceName the resource name
      * @param extension file extension

@@ -57,4 +57,8 @@ public class TileSet {
         return tiles[spriteRow][spriteColumn];
     }
 
+    public int getNumTilesAcross() {
+        return numTilesAcross;
+    }
+
 }

@@ -34,6 +34,10 @@ public class TileMap {
 
     }
 
+    public LevelMap getLevelMap() {
+        return this.map;
+    }
+
     public int getX() {
         return x;
     }
@@ -93,6 +97,10 @@ public class TileMap {
                         y + row * tileSize, null);
             }
         }
+    }
+
+    public LevelMap getMap() {
+        return map;
     }
 
 }
