@@ -80,14 +80,17 @@ public class MapPanel extends JPanel {
     protected void setTileIn(int x, int y) {
         int selection = tilesPanel.getSelection();
 
-        int tileSize = tileMap.getTileSize();
-        int col = x / tileSize;
-        int row = y / tileSize;
+        if (selection != TilesPanel.NONE) {
 
-        System.out.println("Set tile in " + row + ", " + col);
-        LevelMap map = tileMap.getMap();
-        map.setTile(row, col, selection);
-        repaint();
+            int tileSize = tileMap.getTileSize();
+            int col = x / tileSize;
+            int row = y / tileSize;
+
+            System.out.println("Set tile in " + row + ", " + col);
+            LevelMap map = tileMap.getMap();
+            map.setTile(row, col, selection);
+            repaint();
+        }
 
     }
 

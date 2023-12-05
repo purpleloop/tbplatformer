@@ -18,7 +18,7 @@ import tbplatformer.TileSet;
 public class TilesPanel extends JPanel {
 
     /** No selection. */
-    private static final int NONE = -1;
+    public static final int NONE = -1;
 
     /** Serial tag. */
     private static final long serialVersionUID = -2153990238840151387L;
