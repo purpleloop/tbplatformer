@@ -35,6 +35,15 @@ public class LevelMap {
     }
 
     /**
+     * @param row row
+     * @param col column
+     * @return true if cell is valid, false otherwise
+     */
+    public boolean isValid(int row, int col) {
+        return (row >= 0) && (col >= 0) && (row < height) && (col < width);
+    }
+
+    /**
      * @param row row where to set the value
      * @param col column where to set the value
      * @param value the tile id value

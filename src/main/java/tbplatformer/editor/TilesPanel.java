@@ -23,28 +23,31 @@ public class TilesPanel extends JPanel {
     /** Serial tag. */
     private static final long serialVersionUID = -2153990238840151387L;
 
+    /** Border width. */
+    private static final int BORDER_WIDTH = 5;
+
     /** The tileset. */
     private TileSet tileSet;
-    
+
     /** Panel width. */
     private int panelWidth;
 
     /** Panel height. */
     private int panelHeigth;
-    
+
     /** The currently selected tile. */
     private int selectedTile = NONE;
 
     /** Bold stroke. */
     private BasicStroke boldStroke;
-    
+
     /** Mouse handler. */
     private MouseListener mouseListener = new MouseAdapter() {
 
         @Override
         public void mouseClicked(MouseEvent e) {
 
-            int x = e.getX();
+            int x = e.getX() - BORDER_WIDTH;
             int row = x / tileSet.getTileSize();
 
             selectedTile = row;
@@ -54,7 +57,9 @@ public class TilesPanel extends JPanel {
 
     };
 
-    /** Constructor of the panel.
+    /**
+     * Constructor of the panel.
+     * 
      * @param tileSet the tileset to use
      */
     public TilesPanel(TileSet tileSet) {
@@ -64,7 +69,8 @@ public class TilesPanel extends JPanel {
 
         panelWidth = tileSet.getNumTilesAcross() * tileSize;
         panelHeigth = tileSize;
-        setPreferredSize(new Dimension(panelWidth, panelHeigth));
+        setPreferredSize(
+                new Dimension(panelWidth + 2 * BORDER_WIDTH, panelHeigth + 2 * BORDER_WIDTH));
 
         addMouseListener(mouseListener);
 
@@ -79,7 +85,7 @@ public class TilesPanel extends JPanel {
 
         // Draw background
         g.setColor(Color.BLACK);
-        g.fillRect(0, 0, getWidth(), panelHeigth);
+        g.fillRect(0, 0, getWidth() + 2 * BORDER_WIDTH, panelHeigth + 2 * BORDER_WIDTH);
 
         int numTilesAcross = tileSet.getNumTilesAcross();
         int tileSize = tileSet.getTileSize();
@@ -89,7 +95,7 @@ public class TilesPanel extends JPanel {
             for (int x = 0; x < numTilesAcross; x++) {
                 Tile tile = tileSet.getTileByIndex(y * numTilesAcross + x);
 
-                g.drawImage(tile.getImage(), i * tileSize, 0, null);
+                g.drawImage(tile.getImage(), i * tileSize + BORDER_WIDTH, BORDER_WIDTH, null);
                 i++;
 
             }
@@ -98,7 +104,8 @@ public class TilesPanel extends JPanel {
         if (selectedTile != NONE) {
             g.setColor(Color.RED);
             g.setStroke(boldStroke);
-            g.drawRect(selectedTile * tileSize, 0, tileSize, tileSize);
+            g.drawRect(selectedTile * tileSize + BORDER_WIDTH, 0 + BORDER_WIDTH, tileSize,
+                    tileSize);
         }
 
     }

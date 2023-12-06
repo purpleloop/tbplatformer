@@ -86,10 +86,16 @@ public class MapPanel extends JPanel {
             int col = x / tileSize;
             int row = y / tileSize;
 
-            System.out.println("Set tile in " + row + ", " + col);
             LevelMap map = tileMap.getMap();
-            map.setTile(row, col, selection);
-            repaint();
+
+            if (map.isValid(row, col)) {
+
+                System.out.println("Set tile in " + row + ", " + col);
+
+                map.setTile(row, col, selection);
+                repaint();
+            }
+
         }
 
     }
