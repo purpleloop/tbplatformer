@@ -1,11 +1,10 @@
 package tbplatformer;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
+import tbplatformer.animation.CharacterAnimation;
+import tbplatformer.animation.CharacterAnimation.Posture;
 
 public class Player {
 
@@ -36,11 +35,7 @@ public class Player {
     private boolean bottomLeft;
     private boolean bottomRight;
 
-    private Animation animation;
-    private BufferedImage[] idleSprite;
-    private BufferedImage[] walkingSprite;
-    private BufferedImage[] jumpingSprite;
-    private BufferedImage[] fallingSprite;
+    private CharacterAnimation characterAnimation;
     private boolean facingLeft;
 
     public Player(TileMap tileMap) {
@@ -57,26 +52,13 @@ public class Player {
 
         gravity = 0.64;
 
-        idleSprite = new BufferedImage[1];
-        jumpingSprite = new BufferedImage[1];
-        fallingSprite = new BufferedImage[1];
-        walkingSprite = new BufferedImage[6];
-
         try {
-            idleSprite[0] = ImageIO.read(new File("graphics/player/kirbyidle.gif"));
-            jumpingSprite[0] = ImageIO.read(new File("graphics/player/kirbyjump.gif"));
-            fallingSprite[0] = ImageIO.read(new File("graphics/player/kirbyfall.gif"));
-            BufferedImage image = ImageIO.read(new File("graphics/player/kirbywalk.gif"));
-
-            for (int i = 0; i < walkingSprite.length; i++) {
-                walkingSprite[i] = image.getSubimage(i * width + i, 0, width, height);
-            }
+            characterAnimation = new CharacterAnimation(width, height);
 
         } catch (IOException e) {
             throw new GameException("Error while loading player sprites", e);
         }
 
-        animation = new Animation();
         facingLeft = false;
     }
 
@@ -222,21 +204,17 @@ public class Player {
 
         // Sprite animation
         if (left || right) {
-            animation.setFrames(walkingSprite);
-            animation.setDelay(100);
+            characterAnimation.setPosture(Posture.WALKING, 100);
         } else {
-            animation.setFrames(idleSprite);
-            animation.setDelay(-1);
+            characterAnimation.setPosture(Posture.IDLE, -1);
         }
         if (dy < 0) {
-            animation.setFrames(jumpingSprite);
-            animation.setDelay(-1);
+            characterAnimation.setPosture(Posture.JUMPING, -1);
         }
         if (dy > 0) {
-            animation.setFrames(fallingSprite);
-            animation.setDelay(-1);
+            characterAnimation.setPosture(Posture.FALLING, -1);
         }
-        animation.update();
+        characterAnimation.update();
         if (dx < 0) {
             facingLeft = true;
         }
@@ -265,10 +243,10 @@ public class Player {
         int ty = tileMap.getY();
 
         if (facingLeft) {
-            g.drawImage(animation.getImage(), (int) (tx + x - width / 2),
+            g.drawImage(characterAnimation.getImage(), (int) (tx + x - width / 2),
                     (int) (ty + y - height / 2), null);
         } else {
-            g.drawImage(animation.getImage(), (int) (tx + x - width / 2 + width),
+            g.drawImage(characterAnimation.getImage(), (int) (tx + x - width / 2 + width),
                     (int) (ty + y - height / 2), -width, height, null);
         }
 

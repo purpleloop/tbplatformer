@@ -1,4 +1,4 @@
-package tbplatformer;
+package tbplatformer.animation;
 
 import java.awt.image.BufferedImage;
 
@@ -14,9 +14,9 @@ public class Animation {
 
     }
 
-    public void setFrames(BufferedImage[] frames) {
-        this.frames = frames;
-        if (currentFrame >= frames.length) {
+    public void setFrames(FrameSet frames) {
+        this.frames = frames.getFrames();
+        if (currentFrame >= this.frames.length) {
             currentFrame = 0;
         }
     }
