@@ -15,73 +15,69 @@ import tbplatformer.storage.ResourceFileStorage;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 
-    /** Represents the graphical view where to do the game environment rendering */
+    /**
+     * Represents the graphical view where to do the game environment rendering
+     */
     public class GameView {
-    
+
         /** View width. */
         public static final int WIDTH = 400;
-    
+
         /** View height. */
         public static final int HEIGHT = 400;
-    
+
         /** Are stats visible ? */
         private boolean statsVisible = false;
-    
+
         /** The render image associated to the view. */
         private BufferedImage renderImage;
-    
+
         /** The render graphics used to draw the view. */
         private Graphics2D renderGraphics;
-    
+
         GameView() {
-    
+
             renderImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
             renderGraphics = renderImage.createGraphics();
         }
-    
+
         private void render() {
-    
+
             // Draw background
             renderGraphics.setColor(Color.BLACK);
             renderGraphics.fillRect(0, 0, WIDTH, HEIGHT);
-    
+
             // Draw tiles and character
             gameEnv.getTileMap().draw(renderGraphics);
             gameEnv.getPlayer().draw(renderGraphics);
-    
+
             if (statsVisible) {
                 displayStats();
             }
         }
-    
+
         private void displayStats() {
             renderGraphics.setColor(Color.PINK);
-            renderGraphics.drawString("FPS: " + averageFPS, 10, 10);
+            renderGraphics.drawString("FPS: " + gameClock.getAverageFPS(), 10, 10);
         }
-    
+
         public Image getImage() {
             return renderImage;
         }
-    
+
     }
 
     /** Serial tag. */
     private static final long serialVersionUID = -8481917967658589859L;
-    
-    /** The targeted rendering rate in frames par second. */
-    public static final int TARGET_FPS = 30;
 
-    /** Targeted rendering time in seconds. */
-    public static final long TARGET_TIME = 1000 / TARGET_FPS;
-    
     private Thread thread;
     private boolean running;
-
-    private double averageFPS;
 
     private GameEnv gameEnv;
 
     private GameView gameView;
+
+    private GameClock gameClock;
 
     public GamePanel() {
         super();
@@ -108,46 +104,23 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
         init();
 
-        long startTime;
-        long urdTime;
-        long waitTime;
-        int totalTime = 0;
-
-        int frameCount = 0;
-        int maxFrameCount = 30;
-
         // GAME LOOP
         while (running) {
 
-            startTime = System.nanoTime();
+            gameClock.beginLoop();
 
             gameEnv.update();
             gameView.render();
             draw();
 
-            urdTime = (System.nanoTime() - startTime) / 1000000;
-            waitTime = TARGET_TIME - urdTime;
-
-            if (waitTime <= 0) {
-
-                waitTime = 5;
-                System.out.println("gameLoop targetTime : " + TARGET_TIME);
-                System.out.println("gameLoop URDTimeMillis : " + urdTime);
-            }
             try {
-                Thread.sleep(waitTime);
+                Thread.sleep(gameClock.computeWaitTime());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new GameException("Game thread has been interrupted", e);
             }
 
-            totalTime += System.nanoTime() - startTime;
-            frameCount++;
-            if (frameCount == maxFrameCount) {
-                averageFPS = 1000.0 / ((totalTime / frameCount) / 1000000.0);
-                frameCount = 0;
-                totalTime = 0;
-            }
+            gameClock.endLoop();
         }
 
         draw();
@@ -164,6 +137,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         running = true;
 
         gameView = new GameView();
+        gameClock = new GameClock();
 
         ResourceFileStorage resourceFileStorage = new ResourceFileStorage();
         LevelMap map = resourceFileStorage.getMapByName("testmap2");
