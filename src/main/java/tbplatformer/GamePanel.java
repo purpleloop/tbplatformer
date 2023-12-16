@@ -39,34 +39,42 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
         /** View height. */
         public static final int HEIGHT = 400;
 
-        private BufferedImage image;
-        private Graphics2D g;
+        /** Are stats visible ? */
+        private boolean statsVisible = false;
+
+        /** The render image associated to the view. */
+        private BufferedImage renderImage;
+
+        /** The render graphics used to draw the view. */
+        private Graphics2D renderGraphics;
 
         GameView() {
 
-            image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            g = image.createGraphics();
+            renderImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+            renderGraphics = renderImage.createGraphics();
         }
 
         private void render() {
 
             // Draw background
-            g.setColor(Color.BLACK);
-            g.fillRect(0, 0, WIDTH, HEIGHT);
+            renderGraphics.setColor(Color.BLACK);
+            renderGraphics.fillRect(0, 0, WIDTH, HEIGHT);
 
-            displayStats();
+            tileMap.draw(renderGraphics);
+            player.draw(renderGraphics);
 
-            tileMap.draw(g);
-            player.draw(g);
+            if (statsVisible) {
+                displayStats();
+            }
         }
 
         private void displayStats() {
-            g.setColor(Color.BLACK);
-            g.drawString("FPS: " + averageFPS, 10, 10);
+            renderGraphics.setColor(Color.PINK);
+            renderGraphics.drawString("FPS: " + averageFPS, 10, 10);
         }
 
         public Image getImage() {
-            return image;
+            return renderImage;
         }
 
     }
