@@ -199,8 +199,8 @@ public class Player {
         y = tempy;
 
         // move the map
-        tileMap.setX((int) (GamePanel.WIDTH / 2 - x));
-        tileMap.setY((int) (GamePanel.HEIGHT / 2 - y));
+        tileMap.setX((int) (GamePanel.GameView.WIDTH / 2 - x));
+        tileMap.setY((int) (GamePanel.GameView.HEIGHT / 2 - y));
 
         // Sprite animation
         if (left || right) {

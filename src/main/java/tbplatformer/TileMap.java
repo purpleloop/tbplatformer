@@ -29,8 +29,8 @@ public class TileMap {
         this.map = map;
         this.tileSet = tileSet;
 
-        minx = GamePanel.WIDTH - map.getWidth() * tileSet.getTileSize();
-        miny = GamePanel.HEIGHT - map.getHeight() * tileSet.getTileSize();
+        minx = GamePanel.GameView.WIDTH - map.getWidth() * tileSet.getTileSize();
+        miny = GamePanel.GameView.HEIGHT - map.getHeight() * tileSet.getTileSize();
 
     }
 

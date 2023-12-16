@@ -3,6 +3,7 @@ package tbplatformer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -17,25 +18,62 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     /** Serial tag. */
     private static final long serialVersionUID = -8481917967658589859L;
 
-    public static final int WIDTH = 400;
-    public static final int HEIGHT = 400;
-
     private Thread thread;
     private boolean running;
 
     public static final int FPS = 30;
     public static final long TARGET_TIME = 1000 / FPS;
 
-    private BufferedImage image;
-    private Graphics2D g;
     private double averageFPS;
 
     private TileMap tileMap;
     private Player player;
 
+    private GameView gameView;
+
+    public class GameView {
+
+        /** View width. */
+        public static final int WIDTH = 400;
+
+        /** View height. */
+        public static final int HEIGHT = 400;
+
+        private BufferedImage image;
+        private Graphics2D g;
+
+        GameView() {
+
+            image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+            g = image.createGraphics();
+        }
+
+        private void render() {
+
+            // Draw background
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, WIDTH, HEIGHT);
+
+            displayStats();
+
+            tileMap.draw(g);
+            player.draw(g);
+        }
+
+        private void displayStats() {
+            g.setColor(Color.BLACK);
+            g.drawString("FPS: " + averageFPS, 10, 10);
+        }
+
+        public Image getImage() {
+            return image;
+        }
+
+    }
+
     public GamePanel() {
         super();
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setPreferredSize(new Dimension(GameView.WIDTH, GameView.HEIGHT));
 
         setFocusable(true);
         requestFocus();
@@ -72,7 +110,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
             startTime = System.nanoTime();
 
             update();
-            render();
+            gameView.render();
             draw();
 
             urdTime = (System.nanoTime() - startTime) / 1000000;
@@ -104,11 +142,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
     }
 
+    private void draw() {
+        Graphics2D g2 = (Graphics2D) this.getGraphics();
+        g2.drawImage(gameView.getImage(), 0, 0, null);
+        g2.dispose();
+    }
+
     private void init() {
         running = true;
 
-        image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-        g = image.createGraphics();
+        gameView = new GameView();
 
         ResourceFileStorage resourceFileStorage = new ResourceFileStorage();
         LevelMap map = resourceFileStorage.getMapByName("testmap2");
@@ -123,29 +166,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     private void update() {
         tileMap.update();
         player.update();
-    }
-
-    private void render() {
-
-        // Draw background
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
-
-        displayStats();
-
-        tileMap.draw(g);
-        player.draw(g);
-    }
-
-    private void displayStats() {
-        g.setColor(Color.BLACK);
-        g.drawString("FPS: " + averageFPS, 10, 10);
-    }
-
-    private void draw() {
-        Graphics2D g2 = (Graphics2D) this.getGraphics();
-        g2.drawImage(image, 0, 0, null);
-        g2.dispose();
     }
 
     @Override
