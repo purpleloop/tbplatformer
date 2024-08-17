@@ -20,8 +20,7 @@ class GameEnv {
         this.tileMap = tileMap;
 
         this.player = new Player(tileMap);
-        this.player.setX(INITIAL_X);
-        this.player.setY(INITIAL_Y);
+        this.player.setLocation(INITIAL_X, INITIAL_Y);
     }
 
     public Player getPlayer() {
