@@ -9,6 +9,21 @@ import tbplatformer.animation.CharacterAnimation.Posture;
 /** Represents the character. */
 public class Player {
 
+    /** Character movement speed increment (acceleration). */
+    private static final double ACCELERATION = 0.6;
+    
+    /** Deceleration. */
+    private static final double DECELERATION = 0.3;
+
+    /** Maximal speed. */
+    private static final double MAX_SPEED = 4.2;
+
+    /** Maximal falling speed (terminal velocity). */
+    private static final double MAX_FALLING_SPEED = 12;
+
+    /** Jumping impulse speed. */
+    private static final double JUMP_START_VERTICAL_SPEED = -11.0;
+
     /** Abscissa in the level. */
     private double x;
 
@@ -24,17 +39,17 @@ public class Player {
     private int width;
     private int height;
 
+    /** Character is moving to the left. */
     private boolean movingLeft;
-    private boolean movingRight;
-    private boolean jumping;
-    private boolean falling;
 
-    private double moveSpeed;
-    private double maxSpeed;
-    private double maxFallingSpeed;
-    private double stopSpeed;
-    private double jumpStart;
-    private double gravity;
+    /** Character is moving to the right. */
+    private boolean movingRight;
+    
+    /** Character is jumping. */
+    private boolean jumping;
+    
+    /** Character is falling. */
+    private boolean falling;
 
     private TileMap tileMap;
 
@@ -58,14 +73,6 @@ public class Player {
 
         width = 22;
         height = 22;
-
-        moveSpeed = 0.6;
-        maxSpeed = 4.2;
-        maxFallingSpeed = 12;
-        stopSpeed = 0.3;
-        jumpStart = -11.0;
-
-        gravity = 0.64;
 
         try {
             characterAnimation = new CharacterAnimation(width, height);
@@ -229,24 +236,24 @@ public class Player {
     private void updatePosition() {
 
         if (movingLeft) {
-            dx -= moveSpeed;
-            if (dx < -maxSpeed) {
-                dx = -maxSpeed;
+            dx -= ACCELERATION;
+            if (dx < -MAX_SPEED) {
+                dx = -MAX_SPEED;
             }
         } else if (movingRight) {
-            dx += moveSpeed;
-            if (dx > maxSpeed) {
-                dx = maxSpeed;
+            dx += ACCELERATION;
+            if (dx > MAX_SPEED) {
+                dx = MAX_SPEED;
             }
         } else {
             // Stop moving
             if (dx > 0) {
-                dx -= stopSpeed;
+                dx -= DECELERATION;
                 if (dx < 0) {
                     dx = 0;
                 }
             } else if (dx < 0) {
-                dx += stopSpeed;
+                dx += DECELERATION;
                 if (dx > 0) {
                     dx = 0;
                 }
@@ -254,15 +261,18 @@ public class Player {
         }
 
         if (jumping) {
-            dy = jumpStart;
+            dy = JUMP_START_VERTICAL_SPEED;
             falling = true;
             jumping = false;
         }
 
         if (falling) {
-            dy += gravity;
-            if (dy > maxFallingSpeed) {
-                dy = maxFallingSpeed;
+
+            // Free fall acceleration is mass (considered here as unity) x
+            // gravity
+            dy += GameEnv.GRAVITY;
+            if (dy > MAX_FALLING_SPEED) {
+                dy = MAX_FALLING_SPEED;
             }
         } else {
             dy = 0;

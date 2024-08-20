@@ -3,6 +3,9 @@ package tbplatformer;
 /** Models the game environment. */
 class GameEnv {
 
+    /** Gravity. */
+    public static final double GRAVITY = 0.64;
+
     /** Initial abscissa of the player. */
     private static final int INITIAL_X = 50;
 
