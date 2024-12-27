@@ -94,8 +94,9 @@ public class TilesPanel extends JPanel {
         for (int y = 0; y < 2; y++) {
             for (int x = 0; x < numTilesAcross; x++) {
                 Tile tile = tileSet.getTileByIndex(y * numTilesAcross + x);
-
-                g.drawImage(tile.getImage(), i * tileSize + BORDER_WIDTH, BORDER_WIDTH, null);
+                if (tile != null) {
+                    g.drawImage(tile.getImage(), i * tileSize + BORDER_WIDTH, BORDER_WIDTH, null);
+                }
                 i++;
 
             }
