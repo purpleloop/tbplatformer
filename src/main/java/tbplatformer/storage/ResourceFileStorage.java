@@ -19,7 +19,8 @@ import tbplatformer.model.LevelMap;
 /** Game resources storage. */
 public class ResourceFileStorage implements ResourceStorage {
 
-    public final String NEW_LINE = "\n";
+    /** New line char. */
+    public static final String NEW_LINE = "\n";
 
     /** File extensions for maps. */
     private static final String MAP_EXTENSION = ".txt";

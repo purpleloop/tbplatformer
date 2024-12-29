@@ -1,7 +1,21 @@
 package tbplatformer;
 
+import java.util.logging.Logger;
+
 /** Manages the game clock for a realistic update & rendering time. */
 public class GameClock {
+    
+    /** One thousand (double). */
+    public static final double THOUSAND_DOUBLE = 1000.0;
+
+    /** One million (long). */
+    public static final int MILLION_LONG = 1000000;
+
+    /** One million (double). */
+    private static final double MILLION_DOUBLE = 1000000.0;
+
+    /** Class logger. */
+    private static final Logger LOG = Logger.getLogger(GameClock.class.getName());
 
     /** The targeted rendering rate in frames par second. */
     public static final int TARGET_FPS = 30;
@@ -33,7 +47,7 @@ public class GameClock {
     public long computeWaitTime() {
 
         // Compute the time elapsed for update and rendering, in ms.
-        long urdTime = (System.nanoTime() - startTime) / 1000000;
+        long urdTime = (System.nanoTime() - startTime) / MILLION_LONG;
 
         // Compute the time left
         long waitTime = TARGET_TIME - urdTime;
@@ -42,8 +56,9 @@ public class GameClock {
 
             // There was no more time left, assuming a minimum wait time.
             waitTime = 5;
-            System.out.println("gameLoop targetTime : " + TARGET_TIME);
-            System.out.println("gameLoop URDTimeMillis : " + urdTime);
+            
+            LOG.info(() -> "gameLoop targetTime : " + TARGET_TIME);
+            LOG.info(() -> "gameLoop URDTimeMillis : " + urdTime);
         }
 
         return waitTime;
@@ -62,7 +77,7 @@ public class GameClock {
         if (frameCount == maxFrameCount) {
 
             // Compute the average FPS
-            averageFPS = 1000.0 / ((totalTime / frameCount) / 1000000.0);
+            averageFPS = THOUSAND_DOUBLE / (((double) totalTime / frameCount) / MILLION_DOUBLE);
 
             // Reset the sequence
             frameCount = 0;
